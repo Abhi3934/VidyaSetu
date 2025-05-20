@@ -5,6 +5,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const testRoutes = require('./routes/testRoutes');
 const userRoutes = require('./routes/users');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(cors()); // Enable CORS
 // Routes
 app.use('/api', testRoutes);
 app.use('/api', userRoutes);
+app.use('/api/auth', authRoutes);
 
 // Root route
 app.get('/', (req, res) => {
