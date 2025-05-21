@@ -1,30 +1,24 @@
-require('dotenv').config(); // Load environment variables
-
+require('dotenv').config(); // Load .env first
 const express = require('express');
-const cors = require('cors');
 const connectDB = require('./config/db');
-const testRoutes = require('./routes/testRoutes');
-const userRoutes = require('./routes/users');
 const authRoutes = require('./routes/auth');
+const cors = require('cors');
+const authMiddleware = require('./middleware/authMiddleware');
 
 const app = express();
+app.use(cors());
+app.use(express.json());
 
-connectDB(); // Connect to MongoDB
-
-app.use(express.json()); // Parse JSON bodies
-app.use(cors()); // Enable CORS
+// ✅ Connect to MongoDB from config/db.js
+connectDB();
 
 // Routes
-app.use('/api', testRoutes);
-app.use('/api', userRoutes);
 app.use('/api/auth', authRoutes);
-
-// Root route
-app.get('/', (req, res) => {
-  res.send('Welcome to VidyaSetu Backend!');
+app.get('/api/protected', authMiddleware, (req, res) => {
+  res.json({ message: `Hello user ${req.user.userId}, you accessed a protected route!` });
 });
 
+// Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`✅ Server is running on http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`✅ Server is running on http://localhost:${PORT}`));
+
